@@ -9,6 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useVerifyMfa } from '@/hooks/mutations/use-verify-mfa';
+import { useAuthStore } from '@/stores/auth.store';
+import { authApi } from '@/lib/api/auth.api';
+import { getAccessToken } from '@/lib/utils/tokens';
 import { mfaCodeSchema, type MfaCodeInput } from '@/lib/validators/auth.schema';
 import { getErrorMessage } from '@/lib/utils/errors';
 import { AUTH_ROUTES } from '@/lib/utils/constants';
@@ -19,6 +22,7 @@ export function MfaVerifyForm() {
   const [useRecoveryCode, setUseRecoveryCode] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const verifyMfa = useVerifyMfa();
+  const { login } = useAuthStore();
 
   const {
     register,
@@ -36,6 +40,14 @@ export function MfaVerifyForm() {
         code: data.code,
         isRecoveryCode: useRecoveryCode,
       });
+
+      // Set session cookie so middleware allows protected routes
+      document.cookie = 'auth_session=1; path=/; max-age=86400; SameSite=Lax';
+
+      // Fetch user profile with the new MFA-verified token
+      const user = await authApi.getCurrentUser();
+      login(user, getAccessToken()!);
+
       router.push(AUTH_ROUTES.DASHBOARD);
     } catch (err) {
       setError(getErrorMessage(err));

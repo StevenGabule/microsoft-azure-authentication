@@ -2,10 +2,8 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button, Input, Card, Box, Text, Grid, VStack } from '@chakra-ui/react';
+import { Field } from '@chakra-ui/react';
 import { useUserProfile } from '@/hooks/queries/use-user-profile';
 import { useUpdateProfile } from '@/hooks/mutations/use-update-profile';
 import { updateProfileSchema, type UpdateProfileInput } from '@/lib/validators/user.schema';
@@ -47,60 +45,64 @@ export function ProfileEditForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Edit Profile</CardTitle>
-        <CardDescription>Update your personal information.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input id="firstName" {...register('firstName')} />
-              {errors.firstName && (
-                <p className="text-sm text-destructive">{errors.firstName.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input id="lastName" {...register('lastName')} />
-              {errors.lastName && (
-                <p className="text-sm text-destructive">{errors.lastName.message}</p>
-              )}
-            </div>
-          </div>
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Edit Profile</Card.Title>
+        <Card.Description>Update your personal information.</Card.Description>
+      </Card.Header>
+      <Card.Body>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <VStack gap="4" align="stretch">
+            <Grid templateColumns={{ base: '1fr', sm: 'repeat(2, 1fr)' }} gap="4">
+              <Field.Root invalid={!!errors.firstName}>
+                <Field.Label>First Name</Field.Label>
+                <Input {...register('firstName')} />
+                {errors.firstName && (
+                  <Field.ErrorText>{errors.firstName.message}</Field.ErrorText>
+                )}
+              </Field.Root>
+              <Field.Root invalid={!!errors.lastName}>
+                <Field.Label>Last Name</Field.Label>
+                <Input {...register('lastName')} />
+                {errors.lastName && (
+                  <Field.ErrorText>{errors.lastName.message}</Field.ErrorText>
+                )}
+              </Field.Root>
+            </Grid>
 
-          <div className="space-y-2">
-            <Label htmlFor="displayName">Display Name</Label>
-            <Input id="displayName" {...register('displayName')} />
-          </div>
+            <Field.Root>
+              <Field.Label>Display Name</Field.Label>
+              <Input {...register('displayName')} />
+            </Field.Root>
 
-          <div className="space-y-2">
-            <Label htmlFor="jobTitle">Job Title</Label>
-            <Input id="jobTitle" {...register('jobTitle')} />
-          </div>
+            <Field.Root>
+              <Field.Label>Job Title</Field.Label>
+              <Input {...register('jobTitle')} />
+            </Field.Root>
 
-          <div className="space-y-2">
-            <Label htmlFor="department">Department</Label>
-            <Input id="department" {...register('department')} />
-          </div>
+            <Field.Root>
+              <Field.Label>Department</Field.Label>
+              <Input {...register('department')} />
+            </Field.Root>
 
-          {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
-          )}
-          {success && (
-            <div className="rounded-md bg-green-50 p-3 text-sm text-green-700">
-              Profile updated successfully!
-            </div>
-          )}
+            {error && (
+              <Box borderRadius="md" bg="red.50" p="3">
+                <Text fontSize="sm" color="red.600">{error}</Text>
+              </Box>
+            )}
+            {success && (
+              <Box borderRadius="md" bg="green.50" p="3">
+                <Text fontSize="sm" color="green.700">Profile updated successfully!</Text>
+              </Box>
+            )}
 
-          <Button type="submit" disabled={!isDirty || updateProfile.isPending}>
-            <Save className="mr-2 h-4 w-4" />
-            {updateProfile.isPending ? 'Saving...' : 'Save Changes'}
-          </Button>
+            <Button type="submit" disabled={!isDirty || updateProfile.isPending} alignSelf="flex-start">
+              <Save size={16} />
+              {updateProfile.isPending ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </VStack>
         </form>
-      </CardContent>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 }

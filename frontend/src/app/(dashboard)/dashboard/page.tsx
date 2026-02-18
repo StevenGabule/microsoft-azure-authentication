@@ -1,8 +1,7 @@
 'use client';
 
 import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge, Card, Grid, Flex, Text, Heading, VStack, Box } from '@chakra-ui/react';
 import { Shield, Users, Activity, Key } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,111 +9,117 @@ export default function DashboardPage() {
   const { user } = useAuth();
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">
+    <VStack gap="6" align="stretch">
+      <Box>
+        <Heading size="2xl">Dashboard</Heading>
+        <Text color="fg.muted">
           Welcome back, {user?.displayName || user?.email || 'User'}
-        </p>
-      </div>
+        </Text>
+      </Box>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Account Status</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge variant="success">Active</Badge>
-          </CardContent>
-        </Card>
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }} gap="4">
+        <Card.Root>
+          <Card.Header>
+            <Flex align="center" justify="space-between" pb="2">
+              <Card.Title fontSize="sm" fontWeight="medium">Account Status</Card.Title>
+              <Activity size={16} color="var(--chakra-colors-fg-muted)" />
+            </Flex>
+          </Card.Header>
+          <Card.Body pt="0">
+            <Badge colorPalette="green" variant="subtle">Active</Badge>
+          </Card.Body>
+        </Card.Root>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Role</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge variant="secondary">{user?.role || 'USER'}</Badge>
-          </CardContent>
-        </Card>
+        <Card.Root>
+          <Card.Header>
+            <Flex align="center" justify="space-between" pb="2">
+              <Card.Title fontSize="sm" fontWeight="medium">Role</Card.Title>
+              <Users size={16} color="var(--chakra-colors-fg-muted)" />
+            </Flex>
+          </Card.Header>
+          <Card.Body pt="0">
+            <Badge variant="subtle">{user?.role || 'USER'}</Badge>
+          </Card.Body>
+        </Card.Root>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">MFA Status</CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Badge variant={user?.mfaEnabled ? 'success' : 'outline'}>
+        <Card.Root>
+          <Card.Header>
+            <Flex align="center" justify="space-between" pb="2">
+              <Card.Title fontSize="sm" fontWeight="medium">MFA Status</Card.Title>
+              <Shield size={16} color="var(--chakra-colors-fg-muted)" />
+            </Flex>
+          </Card.Header>
+          <Card.Body pt="0">
+            <Badge
+              colorPalette={user?.mfaEnabled ? 'green' : undefined}
+              variant={user?.mfaEnabled ? 'subtle' : 'outline'}
+            >
               {user?.mfaEnabled ? 'Enabled' : 'Disabled'}
             </Badge>
-          </CardContent>
-        </Card>
+          </Card.Body>
+        </Card.Root>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium">Security</CardTitle>
-            <Key className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <Link href="/settings/security" className="text-sm text-primary hover:underline">
+        <Card.Root>
+          <Card.Header>
+            <Flex align="center" justify="space-between" pb="2">
+              <Card.Title fontSize="sm" fontWeight="medium">Security</Card.Title>
+              <Key size={16} color="var(--chakra-colors-fg-muted)" />
+            </Flex>
+          </Card.Header>
+          <Card.Body pt="0">
+            <Link href="/settings/security" style={{ fontSize: '0.875rem', color: 'var(--chakra-colors-primary)', textDecoration: 'none' }}>
               Manage Settings
             </Link>
-          </CardContent>
-        </Card>
-      </div>
+          </Card.Body>
+        </Card.Root>
+      </Grid>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common tasks and settings</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <Link
-              href="/profile"
-              className="flex items-center rounded-md p-2 text-sm hover:bg-accent transition-colors"
-            >
-              View & Edit Profile
-            </Link>
-            <Link
-              href="/settings/security"
-              className="flex items-center rounded-md p-2 text-sm hover:bg-accent transition-colors"
-            >
-              Security Settings
-            </Link>
-            {!user?.mfaEnabled && (
-              <Link
-                href="/mfa-setup"
-                className="flex items-center rounded-md p-2 text-sm text-primary hover:bg-accent transition-colors"
-              >
-                Enable Two-Factor Authentication
+      <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap="6">
+        <Card.Root>
+          <Card.Header>
+            <Card.Title>Quick Actions</Card.Title>
+            <Card.Description>Common tasks and settings</Card.Description>
+          </Card.Header>
+          <Card.Body>
+            <VStack gap="2" align="stretch">
+              <Link href="/profile" style={{ display: 'flex', alignItems: 'center', borderRadius: 6, padding: 8, fontSize: '0.875rem', textDecoration: 'none', color: 'inherit' }}>
+                View &amp; Edit Profile
               </Link>
-            )}
-          </CardContent>
-        </Card>
+              <Link href="/settings/security" style={{ display: 'flex', alignItems: 'center', borderRadius: 6, padding: 8, fontSize: '0.875rem', textDecoration: 'none', color: 'inherit' }}>
+                Security Settings
+              </Link>
+              {!user?.mfaEnabled && (
+                <Link href="/mfa-setup" style={{ display: 'flex', alignItems: 'center', borderRadius: 6, padding: 8, fontSize: '0.875rem', textDecoration: 'none', color: 'var(--chakra-colors-primary)' }}>
+                  Enable Two-Factor Authentication
+                </Link>
+              )}
+            </VStack>
+          </Card.Body>
+        </Card.Root>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Info</CardTitle>
-            <CardDescription>Your Microsoft account details</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Email</span>
-              <span>{user?.email}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Name</span>
-              <span>{user?.displayName || 'Not set'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Role</span>
-              <span>{user?.role}</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+        <Card.Root>
+          <Card.Header>
+            <Card.Title>Account Info</Card.Title>
+            <Card.Description>Your Microsoft account details</Card.Description>
+          </Card.Header>
+          <Card.Body>
+            <VStack gap="2" align="stretch" fontSize="sm">
+              <Flex justify="space-between">
+                <Text color="fg.muted">Email</Text>
+                <Text>{user?.email}</Text>
+              </Flex>
+              <Flex justify="space-between">
+                <Text color="fg.muted">Name</Text>
+                <Text>{user?.displayName || 'Not set'}</Text>
+              </Flex>
+              <Flex justify="space-between">
+                <Text color="fg.muted">Role</Text>
+                <Text>{user?.role}</Text>
+              </Flex>
+            </VStack>
+          </Card.Body>
+        </Card.Root>
+      </Grid>
+    </VStack>
   );
 }

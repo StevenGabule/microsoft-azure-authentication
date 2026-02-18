@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Flex } from '@chakra-ui/react';
 import { setAccessToken } from '@/lib/utils/tokens';
 import { MfaVerifyForm } from '@/components/auth/mfa-verify-form';
 
@@ -20,13 +21,12 @@ export default function MfaVerifyPage() {
       return;
     }
 
-    // Store the MFA-pending token so API calls include it in Authorization header
     setAccessToken(token);
   }, [searchParams, router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4">
+    <Flex minH="100vh" align="center" justify="center" bg="bg" p="4">
       <MfaVerifyForm />
-    </div>
+    </Flex>
   );
 }

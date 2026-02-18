@@ -1,17 +1,18 @@
 import { ProfileCard } from '@/components/profile/profile-card';
 import { ProfileEditForm } from '@/components/profile/profile-edit-form';
+import { Box, Grid, Heading, Text, VStack } from '@chakra-ui/react';
 
 export default function ProfilePage() {
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Profile</h1>
-        <p className="text-muted-foreground">Manage your account profile</p>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
+    <VStack gap="6" align="stretch">
+      <Box>
+        <Heading size="2xl">Profile</Heading>
+        <Text color="fg.muted">Manage your account profile</Text>
+      </Box>
+      <Grid templateColumns={{ base: '1fr', lg: 'repeat(2, 1fr)' }} gap="6">
         <ProfileCard />
         <ProfileEditForm />
-      </div>
-    </div>
+      </Grid>
+    </VStack>
   );
 }

@@ -1,10 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Button, Badge, Card, Separator, Box, Flex, Text, Heading, VStack } from '@chakra-ui/react';
 import { useMfaStatus } from '@/hooks/queries/use-mfa-status';
 import { useActiveSessions } from '@/hooks/queries/use-session';
 import { userApi } from '@/lib/api/user.api';
@@ -40,137 +37,152 @@ export default function SecuritySettingsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Security Settings</h1>
-        <p className="text-muted-foreground">Manage your security preferences</p>
-      </div>
+    <VStack gap="6" align="stretch">
+      <Box>
+        <Heading size="2xl">Security Settings</Heading>
+        <Text color="fg.muted">Manage your security preferences</Text>
+      </Box>
 
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
+        <Box borderRadius="md" bg="red.50" p="3">
+          <Text fontSize="sm" color="red.600">{error}</Text>
+        </Box>
       )}
 
       {/* MFA Section */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Two-Factor Authentication
-              </CardTitle>
-              <CardDescription>
+      <Card.Root>
+        <Card.Header>
+          <Flex align="center" justify="space-between">
+            <Box>
+              <Card.Title>
+                <Flex align="center" gap="2">
+                  <Shield size={20} />
+                  Two-Factor Authentication
+                </Flex>
+              </Card.Title>
+              <Card.Description>
                 Add an extra layer of security to your account
-              </CardDescription>
-            </div>
-            <Badge variant={mfaStatus?.enabled ? 'success' : 'outline'}>
+              </Card.Description>
+            </Box>
+            <Badge
+              colorPalette={mfaStatus?.enabled ? 'green' : undefined}
+              variant={mfaStatus?.enabled ? 'subtle' : 'outline'}
+            >
               {mfaStatus?.enabled ? 'Enabled' : 'Disabled'}
             </Badge>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {mfaStatus?.enabled ? (
-            <>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Method</span>
-                <span>{mfaStatus.method || 'TOTP'}</span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Recovery codes remaining</span>
-                <span>{mfaStatus.recoveryCodesRemaining}</span>
-              </div>
-              <Separator />
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={handleDisableMfa}>
-                  Disable MFA
+          </Flex>
+        </Card.Header>
+        <Card.Body>
+          <VStack gap="4" align="stretch">
+            {mfaStatus?.enabled ? (
+              <>
+                <Flex align="center" justify="space-between" fontSize="sm">
+                  <Text color="fg.muted">Method</Text>
+                  <Text>{mfaStatus.method || 'TOTP'}</Text>
+                </Flex>
+                <Flex align="center" justify="space-between" fontSize="sm">
+                  <Text color="fg.muted">Recovery codes remaining</Text>
+                  <Text>{mfaStatus.recoveryCodesRemaining}</Text>
+                </Flex>
+                <Separator />
+                <Flex gap="2">
+                  <Button variant="outline" size="sm" onClick={handleDisableMfa}>
+                    Disable MFA
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      const result = await mfaApi.regenerateRecoveryCodes();
+                      alert(`New recovery codes:\n\n${result.recoveryCodes.join('\n')}\n\nSave these codes!`);
+                      refetchMfa();
+                    }}
+                  >
+                    <RefreshCw size={16} />
+                    Regenerate Recovery Codes
+                  </Button>
+                </Flex>
+              </>
+            ) : (
+              <Link href="/mfa-setup">
+                <Button>
+                  <Shield size={16} />
+                  Enable Two-Factor Authentication
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={async () => {
-                    const result = await mfaApi.regenerateRecoveryCodes();
-                    alert(`New recovery codes:\n\n${result.recoveryCodes.join('\n')}\n\nSave these codes!`);
-                    refetchMfa();
-                  }}
-                >
-                  <RefreshCw className="mr-2 h-4 w-4" />
-                  Regenerate Recovery Codes
-                </Button>
-              </div>
-            </>
-          ) : (
-            <Link href="/mfa-setup">
-              <Button>
-                <Shield className="mr-2 h-4 w-4" />
-                Enable Two-Factor Authentication
-              </Button>
-            </Link>
-          )}
-        </CardContent>
-      </Card>
+              </Link>
+            )}
+          </VStack>
+        </Card.Body>
+      </Card.Root>
 
       {/* Active Sessions */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Monitor className="h-5 w-5" />
-                Active Sessions
-              </CardTitle>
-              <CardDescription>
+      <Card.Root>
+        <Card.Header>
+          <Flex align="center" justify="space-between">
+            <Box>
+              <Card.Title>
+                <Flex align="center" gap="2">
+                  <Monitor size={20} />
+                  Active Sessions
+                </Flex>
+              </Card.Title>
+              <Card.Description>
                 Manage your active sessions across devices
-              </CardDescription>
-            </div>
+              </Card.Description>
+            </Box>
             <Button variant="outline" size="sm" onClick={() => refetchSessions()}>
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw size={16} />
               Refresh
             </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
+          </Flex>
+        </Card.Header>
+        <Card.Body>
+          <VStack gap="3" align="stretch">
             {sessions?.map((session) => (
-              <div
+              <Flex
                 key={session.id}
-                className="flex items-center justify-between rounded-lg border p-3"
+                align="center"
+                justify="space-between"
+                borderRadius="lg"
+                borderWidth="1px"
+                p="3"
               >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Monitor className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">
+                <Box>
+                  <Flex align="center" gap="2">
+                    <Monitor size={16} color="var(--chakra-colors-fg-muted)" />
+                    <Text fontSize="sm" fontWeight="medium">
                       {session.userAgent?.split(' ')[0] || 'Unknown Device'}
-                    </span>
+                    </Text>
                     {session.isCurrent && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge size="sm" variant="subtle">
                         Current
                       </Badge>
                     )}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
+                  </Flex>
+                  <Text fontSize="xs" color="fg.muted" mt="1">
                     IP: {session.ipAddress || 'Unknown'} | Created:{' '}
                     {new Date(session.createdAt).toLocaleString()}
-                  </div>
-                </div>
+                  </Text>
+                </Box>
                 {!session.isCurrent && (
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleRevokeSession(session.id)}
                   >
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                    <Trash2 size={16} color="var(--chakra-colors-destructive)" />
                   </Button>
                 )}
-              </div>
+              </Flex>
             ))}
             {(!sessions || sessions.length === 0) && (
-              <p className="text-sm text-muted-foreground text-center py-4">
+              <Text fontSize="sm" color="fg.muted" textAlign="center" py="4">
                 No active sessions found.
-              </p>
+              </Text>
             )}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </VStack>
+        </Card.Body>
+      </Card.Root>
+    </VStack>
   );
 }

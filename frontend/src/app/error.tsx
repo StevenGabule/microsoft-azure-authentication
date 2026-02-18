@@ -1,7 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button, Card, Flex, Box, Text } from '@chakra-ui/react';
 import { AlertTriangle } from 'lucide-react';
 
 export default function Error({
@@ -12,39 +11,41 @@ export default function Error({
   reset: () => void;
 }) {
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-            <AlertTriangle className="h-6 w-6 text-destructive" />
-          </div>
-          <CardTitle>Something went wrong</CardTitle>
-          <CardDescription>
+    <Flex minH="100vh" align="center" justify="center" p="4">
+      <Card.Root w="full" maxW="md">
+        <Card.Header textAlign="center">
+          <Flex mx="auto" mb="4" h="12" w="12" align="center" justify="center" borderRadius="full" bg="red.50">
+            <AlertTriangle size={24} color="var(--chakra-colors-destructive)" />
+          </Flex>
+          <Card.Title>Something went wrong</Card.Title>
+          <Card.Description>
             An unexpected error occurred. Please try again.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {process.env.NODE_ENV === 'development' && (
-            <div className="rounded-md bg-muted p-3">
-              <code className="text-xs text-destructive break-all">
-                {error.message}
-              </code>
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button onClick={reset} className="flex-1">
-              Try Again
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => (window.location.href = '/')}
-              className="flex-1"
-            >
-              Go Home
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
+          <Flex direction="column" gap="4">
+            {process.env.NODE_ENV === 'development' && (
+              <Box borderRadius="md" bg="muted" p="3">
+                <Text as="code" fontSize="xs" color="red.600" wordBreak="break-all">
+                  {error.message}
+                </Text>
+              </Box>
+            )}
+            <Flex gap="2">
+              <Button onClick={reset} flex="1">
+                Try Again
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => (window.location.href = '/')}
+                flex="1"
+              >
+                Go Home
+              </Button>
+            </Flex>
+          </Flex>
+        </Card.Body>
+      </Card.Root>
+    </Flex>
   );
 }

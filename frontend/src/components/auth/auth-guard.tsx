@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Flex, Spinner } from '@chakra-ui/react';
 import { useAuthStore } from '@/stores/auth.store';
 import { AUTH_ROUTES } from '@/lib/utils/constants';
 
@@ -28,9 +29,9 @@ export function AuthGuard({ children, requireMfa = false }: AuthGuardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
+      <Flex minH="100vh" align="center" justify="center">
+        <Spinner size="lg" color="primary" />
+      </Flex>
     );
   }
 

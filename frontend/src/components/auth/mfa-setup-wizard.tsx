@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import {
+  Button, Input, Card, Box, Text, Grid, Flex, VStack,
+} from '@chakra-ui/react';
+import { Field } from '@chakra-ui/react';
 import { useSetupMfa, useEnableMfa } from '@/hooks/mutations/use-enable-mfa';
 import { getErrorMessage } from '@/lib/utils/errors';
 import { MfaSetupResponse } from '@/types';
@@ -51,162 +51,169 @@ export function MfaSetupWizard() {
 
   if (step === 'init') {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
-          </div>
-          <CardTitle>Set Up Two-Factor Authentication</CardTitle>
-          <CardDescription>
+      <Card.Root w="full" maxW="md">
+        <Card.Header textAlign="center">
+          <Flex mx="auto" mb="4" h="12" w="12" align="center" justify="center" borderRadius="full" bg="primary/10">
+            <Shield size={24} color="var(--chakra-colors-primary)" />
+          </Flex>
+          <Card.Title>Set Up Two-Factor Authentication</Card.Title>
+          <Card.Description>
             Add an extra layer of security to your account using Microsoft Authenticator or any TOTP app.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
           {error && (
-            <div className="mb-4 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
+            <Box mb="4" borderRadius="md" bg="red.50" p="3">
+              <Text fontSize="sm" color="red.600">{error}</Text>
+            </Box>
           )}
-          <Button onClick={handleSetup} className="w-full" disabled={setupMfa.isPending}>
+          <Button onClick={handleSetup} w="full" disabled={setupMfa.isPending}>
             {setupMfa.isPending ? 'Setting up...' : 'Begin Setup'}
           </Button>
-        </CardContent>
-      </Card>
+        </Card.Body>
+      </Card.Root>
     );
   }
 
   if (step === 'scan') {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Scan QR Code</CardTitle>
-          <CardDescription>
+      <Card.Root w="full" maxW="md">
+        <Card.Header textAlign="center">
+          <Card.Title>Scan QR Code</Card.Title>
+          <Card.Description>
             Scan this QR code with Microsoft Authenticator or your preferred TOTP app.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {setupData?.qrCodeDataUrl && (
-            <div className="flex justify-center">
-              <img
-                src={setupData.qrCodeDataUrl}
-                alt="MFA QR Code"
-                className="h-48 w-48 rounded-lg border"
-              />
-            </div>
-          )}
-          <div className="rounded-md bg-muted p-3">
-            <p className="mb-1 text-xs text-muted-foreground">Manual entry key:</p>
-            <code className="text-xs break-all">{setupData?.secret}</code>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={() => setStep('verify')} className="w-full">
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
+          <VStack gap="4">
+            {setupData?.qrCodeDataUrl && (
+              <Flex justify="center">
+                <img
+                  src={setupData.qrCodeDataUrl}
+                  alt="MFA QR Code"
+                  style={{ height: 192, width: 192, borderRadius: 8, border: '1px solid var(--chakra-colors-border)' }}
+                />
+              </Flex>
+            )}
+            <Box borderRadius="md" bg="muted" p="3">
+              <Text mb="1" fontSize="xs" color="fg.muted">Manual entry key:</Text>
+              <Text as="code" fontSize="xs" wordBreak="break-all">{setupData?.secret}</Text>
+            </Box>
+          </VStack>
+        </Card.Body>
+        <Card.Footer>
+          <Button onClick={() => setStep('verify')} w="full">
             Next: Verify Code
           </Button>
-        </CardFooter>
-      </Card>
+        </Card.Footer>
+      </Card.Root>
     );
   }
 
   if (step === 'verify') {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Verify Setup</CardTitle>
-          <CardDescription>
+      <Card.Root w="full" maxW="md">
+        <Card.Header textAlign="center">
+          <Card.Title>Verify Setup</Card.Title>
+          <Card.Description>
             Enter the 6-digit code from your authenticator app to confirm setup.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="verify-code">Verification Code</Label>
-            <Input
-              id="verify-code"
-              placeholder="000000"
-              maxLength={6}
-              value={verifyCode}
-              onChange={(e) => setVerifyCode(e.target.value)}
-              autoFocus
-            />
-          </div>
-          {error && (
-            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex gap-2">
-          <Button variant="outline" onClick={() => setStep('scan')} className="flex-1">
-            Back
-          </Button>
-          <Button
-            onClick={handleVerify}
-            className="flex-1"
-            disabled={verifyCode.length !== 6 || enableMfa.isPending}
-          >
-            {enableMfa.isPending ? 'Verifying...' : 'Verify & Enable'}
-          </Button>
-        </CardFooter>
-      </Card>
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
+          <VStack gap="4">
+            <Field.Root>
+              <Field.Label>Verification Code</Field.Label>
+              <Input
+                placeholder="000000"
+                maxLength={6}
+                value={verifyCode}
+                onChange={(e) => setVerifyCode(e.target.value)}
+                autoFocus
+              />
+            </Field.Root>
+            {error && (
+              <Box borderRadius="md" bg="red.50" p="3" w="full">
+                <Text fontSize="sm" color="red.600">{error}</Text>
+              </Box>
+            )}
+          </VStack>
+        </Card.Body>
+        <Card.Footer>
+          <Flex gap="2" w="full">
+            <Button variant="outline" onClick={() => setStep('scan')} flex="1">
+              Back
+            </Button>
+            <Button
+              onClick={handleVerify}
+              flex="1"
+              disabled={verifyCode.length !== 6 || enableMfa.isPending}
+            >
+              {enableMfa.isPending ? 'Verifying...' : 'Verify & Enable'}
+            </Button>
+          </Flex>
+        </Card.Footer>
+      </Card.Root>
     );
   }
 
   if (step === 'recovery') {
     return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Save Recovery Codes</CardTitle>
-          <CardDescription>
+      <Card.Root w="full" maxW="md">
+        <Card.Header textAlign="center">
+          <Card.Title>Save Recovery Codes</Card.Title>
+          <Card.Description>
             Store these codes in a safe place. Each code can only be used once.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-md border bg-muted p-4">
-            <div className="grid grid-cols-2 gap-2">
-              {setupData?.recoveryCodes.map((code, index) => (
-                <code key={index} className="text-sm font-mono">
-                  {code}
-                </code>
-              ))}
-            </div>
-          </div>
-          <Button variant="outline" onClick={copyRecoveryCodes} className="w-full">
-            {copiedCodes ? (
-              <>
-                <Check className="mr-2 h-4 w-4" /> Copied!
-              </>
-            ) : (
-              <>
-                <Copy className="mr-2 h-4 w-4" /> Copy Recovery Codes
-              </>
-            )}
-          </Button>
-        </CardContent>
-        <CardFooter>
-          <Button onClick={() => setStep('complete')} className="w-full">
+          </Card.Description>
+        </Card.Header>
+        <Card.Body>
+          <VStack gap="4">
+            <Box borderRadius="md" borderWidth="1px" bg="muted" p="4" w="full">
+              <Grid templateColumns="repeat(2, 1fr)" gap="2">
+                {setupData?.recoveryCodes.map((code, index) => (
+                  <Text as="code" key={index} fontSize="sm" fontFamily="mono">
+                    {code}
+                  </Text>
+                ))}
+              </Grid>
+            </Box>
+            <Button variant="outline" onClick={copyRecoveryCodes} w="full">
+              {copiedCodes ? (
+                <>
+                  <Check size={16} /> Copied!
+                </>
+              ) : (
+                <>
+                  <Copy size={16} /> Copy Recovery Codes
+                </>
+              )}
+            </Button>
+          </VStack>
+        </Card.Body>
+        <Card.Footer>
+          <Button onClick={() => setStep('complete')} w="full">
             I have saved my codes
           </Button>
-        </CardFooter>
-      </Card>
+        </Card.Footer>
+      </Card.Root>
     );
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-          <Check className="h-6 w-6 text-green-600" />
-        </div>
-        <CardTitle>MFA Enabled Successfully</CardTitle>
-        <CardDescription>
+    <Card.Root w="full" maxW="md">
+      <Card.Header textAlign="center">
+        <Flex mx="auto" mb="4" h="12" w="12" align="center" justify="center" borderRadius="full" bg="green.100">
+          <Check size={24} color="green" />
+        </Flex>
+        <Card.Title>MFA Enabled Successfully</Card.Title>
+        <Card.Description>
           Your account is now protected with two-factor authentication.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Button onClick={() => window.location.href = '/settings/security'} className="w-full">
+        </Card.Description>
+      </Card.Header>
+      <Card.Body>
+        <Button onClick={() => window.location.href = '/settings/security'} w="full">
           Go to Security Settings
         </Button>
-      </CardContent>
-    </Card>
+      </Card.Body>
+    </Card.Root>
   );
 }

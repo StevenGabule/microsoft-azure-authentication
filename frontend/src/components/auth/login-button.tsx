@@ -1,19 +1,16 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@chakra-ui/react';
 import { useLogin } from '@/hooks/mutations/use-login';
 
-interface LoginButtonProps {
-  className?: string;
-}
-
-export function LoginButton({ className }: LoginButtonProps) {
+export function LoginButton() {
   const { login } = useLogin();
 
   return (
-    <Button onClick={login} size="lg" className={className}>
+    <Button onClick={login} size="lg">
       <svg
-        className="mr-2 h-5 w-5"
+        width="20"
+        height="20"
         viewBox="0 0 21 21"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

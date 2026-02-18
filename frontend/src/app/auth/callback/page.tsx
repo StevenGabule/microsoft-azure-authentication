@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth.store';
 import { setAccessToken } from '@/lib/utils/tokens';
 import { authApi } from '@/lib/api/auth.api';
+import { Flex, Spinner, Text, VStack } from '@chakra-ui/react';
 
 export default function AuthCallbackPage() {
   const searchParams = useSearchParams();
@@ -41,11 +42,11 @@ export default function AuthCallbackPage() {
   }, [searchParams, router, login]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="text-center space-y-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto" />
-        <p className="text-muted-foreground">Completing sign in...</p>
-      </div>
-    </div>
+    <Flex minH="100vh" align="center" justify="center">
+      <VStack gap="4" textAlign="center">
+        <Spinner size="lg" color="primary" />
+        <Text color="fg.muted">Completing sign in...</Text>
+      </VStack>
+    </Flex>
   );
 }

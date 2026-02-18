@@ -1,19 +1,23 @@
 'use client';
 
 import { Suspense } from 'react';
+import { ChakraProvider, Flex, Spinner } from '@chakra-ui/react';
 import { QueryProvider } from './query-provider';
 import { SessionProvider } from '@/components/auth/session-provider';
+import { system } from '@/theme';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <QueryProvider>
-      <Suspense fallback={
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-        </div>
-      }>
-        <SessionProvider>{children}</SessionProvider>
-      </Suspense>
-    </QueryProvider>
+    <ChakraProvider value={system}>
+      <QueryProvider>
+        <Suspense fallback={
+          <Flex minH="100vh" align="center" justify="center">
+            <Spinner size="lg" color="primary" />
+          </Flex>
+        }>
+          <SessionProvider>{children}</SessionProvider>
+        </Suspense>
+      </QueryProvider>
+    </ChakraProvider>
   );
 }

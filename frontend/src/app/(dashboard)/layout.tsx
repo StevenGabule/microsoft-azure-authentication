@@ -1,5 +1,6 @@
 import { Header } from '@/components/layout/header';
 import { AuthGuard } from '@/components/auth/auth-guard';
+import { Box, Container } from '@chakra-ui/react';
 
 export default function DashboardLayout({
   children,
@@ -8,10 +9,10 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background">
+      <Box minH="100vh" bg="bg">
         <Header />
-        <main className="container mx-auto py-6 px-4">{children}</main>
-      </div>
+        <Container maxW="7xl" py="6" px="4">{children}</Container>
+      </Box>
     </AuthGuard>
   );
 }

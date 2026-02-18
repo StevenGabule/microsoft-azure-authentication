@@ -2,10 +2,9 @@
 
 import { useAuth } from '@/hooks/use-auth';
 import { LogoutButton } from '@/components/auth/logout-button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Avatar, Badge, Box, Flex, Text } from '@chakra-ui/react';
 import Link from 'next/link';
-import { Shield, Settings, User } from 'lucide-react';
+import { Shield, Settings } from 'lucide-react';
 
 export function Header() {
   const { user, isAuthenticated } = useAuth();
@@ -15,58 +14,63 @@ export function Header() {
     : '';
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="h-6 w-6 text-primary" />
-          <Link href="/dashboard" className="text-lg font-semibold">
+    <Box
+      as="header"
+      position="sticky"
+      top="0"
+      zIndex="sticky"
+      w="full"
+      borderBottomWidth="1px"
+      bg="bg/95"
+      backdropFilter="blur(8px)"
+    >
+      <Flex
+        maxW="7xl"
+        mx="auto"
+        px="4"
+        h="14"
+        align="center"
+        justify="space-between"
+      >
+        <Flex align="center" gap="2">
+          <Shield size={24} color="var(--chakra-colors-primary)" />
+          <Link href="/dashboard" style={{ fontSize: '1.125rem', fontWeight: 600, textDecoration: 'none', color: 'inherit' }}>
             Azure Auth Portal
           </Link>
-        </div>
+        </Flex>
 
         {isAuthenticated && user && (
-          <div className="flex items-center gap-4">
-            <nav className="flex items-center gap-2">
-              <Link
-                href="/dashboard"
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
+          <Flex align="center" gap="4">
+            <Flex as="nav" align="center" gap="2">
+              <Link href="/dashboard" style={{ borderRadius: 6, padding: '6px 12px', fontSize: '0.875rem', fontWeight: 500, color: 'var(--chakra-colors-fg-muted)', textDecoration: 'none' }}>
                 Dashboard
               </Link>
-              <Link
-                href="/profile"
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <Link href="/profile" style={{ borderRadius: 6, padding: '6px 12px', fontSize: '0.875rem', fontWeight: 500, color: 'var(--chakra-colors-fg-muted)', textDecoration: 'none' }}>
                 Profile
               </Link>
-              <Link
-                href="/settings/security"
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Settings className="h-4 w-4" />
+              <Link href="/settings/security" style={{ borderRadius: 6, padding: '6px 12px', fontSize: '0.875rem', fontWeight: 500, color: 'var(--chakra-colors-fg-muted)', textDecoration: 'none' }}>
+                <Settings size={16} />
               </Link>
-            </nav>
+            </Flex>
 
-            <div className="flex items-center gap-3 border-l pl-4">
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={user.avatarUrl || undefined} alt={user.displayName || ''} />
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-                <div className="hidden md:block">
-                  <p className="text-sm font-medium">{user.displayName || user.email}</p>
-                  <div className="flex items-center gap-1">
-                    <Badge variant="secondary" className="text-xs">
-                      {user.role}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+            <Flex align="center" gap="3" borderLeftWidth="1px" pl="4">
+              <Flex align="center" gap="2">
+                <Avatar.Root size="sm">
+                  <Avatar.Image src={user.avatarUrl || undefined} />
+                  <Avatar.Fallback>{initials}</Avatar.Fallback>
+                </Avatar.Root>
+                <Box display={{ base: 'none', md: 'block' }}>
+                  <Text fontSize="sm" fontWeight="medium">{user.displayName || user.email}</Text>
+                  <Badge size="sm" variant="subtle">
+                    {user.role}
+                  </Badge>
+                </Box>
+              </Flex>
               <LogoutButton />
-            </div>
-          </div>
+            </Flex>
+          </Flex>
         )}
-      </div>
-    </header>
+      </Flex>
+    </Box>
   );
 }

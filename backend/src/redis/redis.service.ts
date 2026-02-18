@@ -17,6 +17,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private readonly configService: ConfigService) {}
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   async onModuleInit() {
     this.client = new Redis(this.configService.get<string>('redis.url')!, {
       maxRetriesPerRequest: 3,

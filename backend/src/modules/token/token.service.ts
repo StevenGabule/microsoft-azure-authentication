@@ -1,15 +1,12 @@
-import {
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto';
+import type { StringValue } from 'ms';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RedisService } from '../../redis/redis.service';
 import { AUTH_CONSTANTS, ERROR_MESSAGES } from '../../common/constants';
-import type { JwtPayload, JwtRefreshPayload } from '../../common/interfaces';
+import type { JwtPayload } from '../../common/interfaces';
 
 /**
  * Manages JWT access/refresh token lifecycle including creation,
@@ -29,10 +26,13 @@ export class TokenService {
   /**
    * Creates a short-lived JWT access token.
    */
-  async createAccessToken(payload: Omit<JwtPayload, 'iat' | 'exp'>): Promise<string> {
-    return this.jwtService.signAsync(payload as any, {
+  async createAccessToken(
+    payload: Omit<JwtPayload, 'iat' | 'exp'>,
+  ): Promise<string> {
+    return this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('jwt.accessSecret'),
-      expiresIn: this.configService.get<string>('jwt.accessExpiration') as any,
+      expiresIn: (this.configService.get('jwt.accessExpiration') ??
+        '15m') as StringValue,
     });
   }
 
@@ -49,7 +49,8 @@ export class TokenService {
     const tokenHash = this.hashToken(token);
 
     const expiresAt = new Date();
-    const refreshExpiration = this.configService.get<string>('jwt.refreshExpiration') || '7d';
+    const refreshExpiration =
+      this.configService.get<string>('jwt.refreshExpiration') || '7d';
     const days = parseInt(refreshExpiration.replace('d', ''), 10) || 7;
     expiresAt.setDate(expiresAt.getDate() + days);
 
@@ -138,7 +139,7 @@ export class TokenService {
    */
   async blacklistAccessToken(token: string): Promise<void> {
     try {
-      const decoded = this.jwtService.decode(token) as JwtPayload;
+      const decoded = this.jwtService.decode<{ exp?: number }>(token);
       if (!decoded?.exp) return;
 
       const ttl = decoded.exp - Math.floor(Date.now() / 1000);

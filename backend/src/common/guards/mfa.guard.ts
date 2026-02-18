@@ -26,8 +26,10 @@ export class MfaGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user as AuthenticatedUser;
+    const request = context
+      .switchToHttp()
+      .getRequest<{ user: AuthenticatedUser }>();
+    const user = request.user;
 
     if (!user?.mfaVerified) {
       throw new ForbiddenException(ERROR_MESSAGES.MFA_REQUIRED);

@@ -33,7 +33,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       ...(process.env.NODE_ENV === 'development' && {
-        details: typeof exceptionResponse === 'object' ? exceptionResponse : undefined,
+        details:
+          typeof exceptionResponse === 'object' ? exceptionResponse : undefined,
       }),
     };
 

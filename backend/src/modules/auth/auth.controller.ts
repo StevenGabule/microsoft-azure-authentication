@@ -55,7 +55,8 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    const storedState = req.cookies?.oauth_state;
+    const cookies = req.cookies as Record<string, string>;
+    const storedState: string | undefined = cookies?.oauth_state;
     if (!storedState || storedState !== state) {
       const frontendUrl = this.configService.get<string>('app.frontendUrl');
       return res.redirect(`${frontendUrl}/login?error=invalid_state`);
@@ -102,7 +103,8 @@ export class AuthController {
   @Public()
   @HttpCode(HttpStatus.OK)
   async refresh(@Req() req: Request, @Res() res: Response) {
-    const refreshToken = req.cookies?.refresh_token;
+    const cookies = req.cookies as Record<string, string>;
+    const refreshToken: string | undefined = cookies?.refresh_token;
     if (!refreshToken) {
       return res.status(HttpStatus.UNAUTHORIZED).json({
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -119,7 +121,7 @@ export class AuthController {
       try {
         const payload = JSON.parse(
           Buffer.from(currentToken.split('.')[1], 'base64').toString(),
-        );
+        ) as { sub?: string };
         userId = payload.sub;
       } catch {
         // Token might be expired but we still need user ID
@@ -215,7 +217,7 @@ export class AuthController {
    * Gets the current authenticated user's info.
    */
   @Get('me')
-  async getCurrentUser(@CurrentUser() user: AuthenticatedUser) {
+  getCurrentUser(@CurrentUser() user: AuthenticatedUser) {
     return user;
   }
 }

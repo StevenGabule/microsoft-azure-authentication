@@ -184,7 +184,9 @@ export class MfaService {
     });
 
     await this.redis.del(`${AUTH_CONSTANTS.MFA_ATTEMPT_PREFIX}${userId}`);
-    this.logger.log(`Recovery code used for user ${userId}. ${updatedCodes.length} codes remaining.`);
+    this.logger.log(
+      `Recovery code used for user ${userId}. ${updatedCodes.length} codes remaining.`,
+    );
     return true;
   }
 

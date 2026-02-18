@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
 
 /**
@@ -14,15 +15,15 @@ export class AzureAdStrategy extends PassportStrategy(Strategy, 'azure-ad') {
 
   constructor(private readonly configService: ConfigService) {
     super({
-      jwtFromRequest: (req: any) => {
-        return req?.query?.code || null;
+      jwtFromRequest: (req: Request): string | null => {
+        return (req.query?.code as string) || null;
       },
       secretOrKey: configService.get<string>('jwt.accessSecret')!,
       ignoreExpiration: true,
     });
   }
 
-  async validate(payload: any): Promise<any> {
+  validate(payload: Record<string, unknown>): Record<string, unknown> {
     return payload;
   }
 }

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ERROR_MESSAGES } from '../../common/constants';
 import { UpdateUserDto, UpdateUserRoleDto, UserResponseDto } from './dto';
@@ -182,7 +178,12 @@ export class UserService {
     page: number = 1,
     limit: number = 20,
     role?: Role,
-  ): Promise<{ users: UserResponseDto[]; total: number; page: number; totalPages: number }> {
+  ): Promise<{
+    users: UserResponseDto[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }> {
     const skip = (page - 1) * limit;
     const where = role ? { role } : {};
 

@@ -41,9 +41,9 @@ export class SessionService {
    * Creates a new session for the user.
    */
   async createSession(data: CreateSessionData): Promise<string> {
-    const absoluteTimeout = this.configService.get<number>(
-      'security.sessionAbsoluteTimeout',
-    ) || 86400;
+    const absoluteTimeout =
+      this.configService.get<number>('security.sessionAbsoluteTimeout') ||
+      86400;
 
     const expiresAt = new Date(Date.now() + absoluteTimeout * 1000);
 
@@ -109,7 +109,11 @@ export class SessionService {
       `${AUTH_CONSTANTS.SESSION_PREFIX}${sessionId}`,
     );
     if (cached) {
-      const data = JSON.parse(cached);
+      const data = JSON.parse(cached) as {
+        userId: string;
+        mfaCompleted: boolean;
+        createdAt: string;
+      };
       data.mfaCompleted = true;
       const ttl = await this.redis.ttl(
         `${AUTH_CONSTANTS.SESSION_PREFIX}${sessionId}`,
@@ -201,10 +205,7 @@ export class SessionService {
   async cleanupExpiredSessions(): Promise<number> {
     const result = await this.prisma.session.deleteMany({
       where: {
-        OR: [
-          { expiresAt: { lt: new Date() } },
-          { revokedAt: { not: null } },
-        ],
+        OR: [{ expiresAt: { lt: new Date() } }, { revokedAt: { not: null } }],
       },
     });
 

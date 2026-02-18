@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -123,7 +119,14 @@ export class AuthService {
     );
 
     // Log audit event
-    await this.createAuditLog(user.id, 'LOGIN', 'session', ipAddress, userAgent, true);
+    await this.createAuditLog(
+      user.id,
+      'LOGIN',
+      'session',
+      ipAddress,
+      userAgent,
+      true,
+    );
 
     this.logger.log(`User ${user.email} logged in successfully`);
 
@@ -175,7 +178,14 @@ export class AuthService {
     await this.tokenService.revokeAllUserTokens(userId);
 
     // Log audit event
-    await this.createAuditLog(userId, 'LOGOUT', 'session', ipAddress, userAgent, true);
+    await this.createAuditLog(
+      userId,
+      'LOGOUT',
+      'session',
+      ipAddress,
+      userAgent,
+      true,
+    );
 
     // Get Azure AD logout URL
     const frontendUrl = this.configService.get<string>('app.frontendUrl')!;
@@ -225,7 +235,14 @@ export class AuthService {
     });
 
     // Log audit event
-    await this.createAuditLog(userId, 'MFA_VERIFIED', 'session', ipAddress, userAgent, true);
+    await this.createAuditLog(
+      userId,
+      'MFA_VERIFIED',
+      'session',
+      ipAddress,
+      userAgent,
+      true,
+    );
 
     return { accessToken };
   }

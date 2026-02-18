@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { JwtRefreshPayload } from '../../../common/interfaces';
 import { ERROR_MESSAGES } from '../../../common/constants';
+import { Request } from 'express';
 
 /**
  * Strategy for validating refresh tokens from HTTP-only cookies.
@@ -16,8 +17,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
   constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: any) => {
-          return req?.cookies?.refresh_token || null;
+        (req: Request) => {
+          return (req?.cookies?.refresh_token as string) || null;
         },
       ]),
       secretOrKey: configService.get<string>('jwt.refreshSecret')!,
@@ -26,8 +27,8 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: any, payload: JwtRefreshPayload) {
-    const refreshToken = req?.cookies?.refresh_token;
+  validate(req: Request, payload: JwtRefreshPayload) {
+    const refreshToken = req?.cookies?.refresh_token as string;
     if (!refreshToken) {
       throw new UnauthorizedException(ERROR_MESSAGES.REFRESH_TOKEN_INVALID);
     }
